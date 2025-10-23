@@ -1,0 +1,209 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+    --animatable-viewport-height: 100vh;
+    --disk-width-multiplier: 20px;
+    --disk-width-multiplier__narrow: 13px;
+}
+
+@supports (-webkit-touch-callout: none) {
+    :root {
+        --animatable-viewport-height: 85vh;
+    }
+}
+
+body {
+    @apply block h-screen bg-primary-900;
+}
+
+#root {
+    @apply flex flex-col justify-center text-white;
+    position: fixed;
+    top: 50%;
+    width: 100%;
+    transform: translateY(-50%);
+    height: 100%;
+}
+
+@supports (-webkit-touch-callout: none) {
+    body,
+    #root {
+        height: -webkit-fill-available;
+    }
+}
+
+.container {
+    max-width: 768px;
+}
+
+/* Hanoi container styles */
+.box {
+    padding: 10px;
+    border-radius: 10px;
+    height: 130px;
+    width: min(45%, 165px);
+    @apply relative flex flex-col items-center justify-end;
+}
+
+.box:nth-of-type(2) {
+    top: 10px;
+    @apply absolute left-0 right-0 pt-0 mx-auto;
+}
+
+.box::before,
+.box::after {
+    content: '';
+    border-radius: 5px;
+    @apply absolute bottom-0 bg-primary-900 left-1/2;
+}
+
+.box:last-of-type::before,
+.box:last-of-type::after {
+    @apply bg-secondary-500;
+}
+
+.box::before {
+    height: 10px;
+    width: calc(100% - 5px);
+    transform: translateX(-50%);
+}
+
+.box::after {
+    height: 90%;
+    width: 10px;
+    transform: translate(-50%, 0);
+}
+
+.disks-container {
+    box-shadow: inset 0 4px 8px 0 rgb(0 0 0 / 0.3);
+    padding-top: 175px;
+    @apply relative;
+}
+
+.disk .disk-content {
+    position: relative;
+    z-index: 1;
+    transition: all;
+    width: calc(var(--disk-id) * var(--disk-width-multiplier));
+    @apply border-2 bg-primary-300 border-primary-900;
+}
+
+[data-is-narrow-level='true'] .disk .disk-content {
+    width: calc(var(--disk-id) * var(--disk-width-multiplier__narrow));
+}
+
+.disk:not(.is-dragging) {
+    transform: none !important;
+}
+
+/* End of hanoi container */
+
+.reset-icon > path {
+    stroke: currentColor;
+}
+
+.logo path {
+    -webkit-filter: drop-shadow(3px 3px 2px #27334b);
+    filter: drop-shadow(3px 3px 2px #3d567caa);
+}
+
+/* Modal styles */
+.__reakit-portal [role='dialog'] {
+    transform: translateY(100%);
+    opacity: 0;
+    transition: opacity 250ms ease-in-out, transform 250ms ease-in-out;
+}
+
+.__reakit-portal [role='dialog'][data-enter] {
+    opacity: 1;
+    transform: translateY(0%);
+}
+
+.__reakit-portal [role='dialog'][data-leave] {
+    opacity: 0;
+    transform: translateY(100%);
+}
+
+.modal-button {
+    @apply block w-full px-16 py-2 text-white rounded bg-primary-500;
+}
+
+/* End of Modal styles */
+
+/* Animated Background */
+.circle-container {
+    @apply absolute left-0 top-6 -z-50;
+    animation: move-x-axis var(--speed-x) linear infinite alternate var(--delay-x);
+}
+
+.circle {
+    height: var(--size);
+    width: var(--size);
+    @apply rounded-full bg-accent-500;
+    filter: blur(15px);
+    opacity: 0.25;
+    animation: move-y-axis var(--speed-y) linear infinite alternate var(--delay-y);
+}
+
+/* End of Animated Background */
+
+@media screen(medium) {
+    .box {
+        height: 180px;
+    }
+
+    .disks-container {
+        padding-top: 200px;
+    }
+}
+
+@media screen(sm) {
+    :root {
+        --animatable-viewport-height: 100vh;
+        --disk-width-multiplier: 24px;
+        --disk-width-multiplier__narrow: 17px;
+    }
+
+    .disks-container {
+        padding-top: unset;
+    }
+
+    .box,
+    .box:nth-of-type(2) {
+        top: 0;
+        width: 180px;
+        position: relative;
+    }
+}
+
+@media screen(tall) {
+    main {
+        margin-bottom: 100px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .__reakit-portal [role='dialog'] {
+        transform: translateY(0%);
+        opacity: 1;
+        transition: none;
+    }
+
+    .circle-container {
+        display: none;
+    }
+}
+
+@keyframes move-x-axis {
+    100% {
+        transform: translateX(calc(100vw - var(--size)));
+    }
+}
+
+@keyframes move-y-axis {
+    100% {
+        transform: translateY(calc(var(--animatable-viewport-height) - var(--size)));
+    }
+}
